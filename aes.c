@@ -76,5 +76,15 @@ void shift_rows(aes_state*state){
     }
     state->matrix[3][0] = temp;
 }
-
-
+void rot_word(unsigned char *word) {
+    unsigned char temp = word[0];
+    for (int i = 0; i < 3; i++) {
+        word[i] = word[i + 1];
+    }
+    word[3] = temp;
+}
+void sub_word(unsigned char *word) {
+    for (int i = 0; i < 4; i++) {
+        word[i] = sbox[word[i]];
+    }
+}

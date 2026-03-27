@@ -94,3 +94,49 @@ void write_buf_to_file(const unsigned char *buf, size_t len, const char *out_fil
     fprintf(fp, "\n");
     fclose(fp);
 }
+unsigned char * read_key_file(const char *keyFileName, size_t *out_len) {
+    FILE *fd = fopen(keyFileName, "r");
+    if (fd == NULL) {
+        perror("Error opening key file");
+        return NULL;
+    }
+    unsigned char *temp_buf = malloc(49); // Allocate a buffer to hold the key data (48 bytes for 256-bit key)
+    if (temp_buf == NULL) {
+        perror("Key buffer Memory allocation failed");
+        fclose(fd);
+        return NULL;
+    }
+    size_t bytes_read = fread(temp_buf, 1, 48, fd); // Read up to 48 bytes from the key file
+    if (bytes_read!=48) {
+        perror("Error reading key file");
+        free(temp_buf); // Free the allocated buffer
+        fclose(fd);
+        return NULL;    
+    }
+    temp_buf[48] = '\0'; // Null-terminate the buffer to ensure it's a valid string
+    fclose(fd); // Close the file after reading
+    
+    size_t byte_count = 0; // Counter for the number of bytes read
+    int high_nibble = -1; // Temporary variable to hold the high nibble of a byte
+    unsigned char *initial_key = malloc(16); // Allocate memory for expanded keys
+    if (initial_key == NULL) {
+        perror("Initial key buffer allocation failed");
+        free(temp_buf);
+        return NULL;
+    }
+    // 3. The Parsing Loop
+    for (long i = 0; i < 48; i++) {
+        int val = hex_to_int(temp_buf[i]);
+        if (val != -1) {
+            if (high_nibble == -1) {
+                high_nibble = val; // This is the first digit (e.g., the '5' in '53')
+            } else {
+                // This is the second digit (e.g., the '3' in '53')
+                initial_key[byte_count++] = (high_nibble << 4) | val;
+                high_nibble = -1; // Reset for next byte
+            }
+        }
+    }
+    free(temp_buf);
+    return initial_key;
+}
