@@ -40,9 +40,10 @@ static const unsigned char Rcon[11] = {
     0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
 };
 void populate_state(aes_state * state, unsigned char * input, size_t len){
-    for(int r=0;r<4;r++){
-        for(int c=0;c<4;c++){
-            state->matrix[r][c]=input[c*4+r]; // Fill the state matrix in column-major order (first fill down columns, then move to the next column)
+    // Optimized for linear cache access
+    for (int c = 0; c < 4; c++) {
+        for (int r = 0; r < 4; r++) {
+            state->matrix[r][c] = input[c * 4 + r]; // Fill the state matrix in column-major order (first fill down columns, then move to the next column)
         }
     }
 }
