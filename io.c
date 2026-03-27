@@ -94,7 +94,7 @@ void write_buf_to_file(const unsigned char *buf, size_t len, const char *out_fil
     fprintf(fp, "\n");
     fclose(fp);
 }
-unsigned char * read_key_file(const char *keyFileName, size_t *out_len) {
+unsigned char * read_key_file(const char *keyFileName) {
     FILE *fd = fopen(keyFileName, "r");
     if (fd == NULL) {
         perror("Error opening key file");

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "io.h"
-unsigned char expanded_keys[176];
+
 
 
 int main(int argc, char *argv[]) {
@@ -13,8 +13,8 @@ int main(int argc, char *argv[]) {
     const char* keyFileName = argv[2];
     const char* out_filename = (argc == 4) ? argv[3] : "output.txt";
     size_t data_len = 0;
-    size_t key_len = 0;
-    unsigned char *key_buf = read_file(keyFileName, &key_len);
+    unsigned char expanded_keys[176];
+    unsigned char *key_buf = read_key_file(keyFileName);
     if (key_buf == NULL) {
         fprintf(stderr, "Failed to read key file: %s\n", keyFileName);
         return 1;

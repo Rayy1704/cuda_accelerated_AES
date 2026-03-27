@@ -3,18 +3,21 @@
 
 #include <stddef.h>
 
-/* AES state matrix representation */
+// AES state matrix representation 
 typedef struct {
     unsigned char matrix[4][4];
 } aes_state;
 
-/* Populate AES state matrix from input bytes (column-major order) */
+// Populate AES state matrix from input bytes (column-major order) 
 void populate_state(aes_state * state, unsigned char * input, size_t len);
 
-/* SubBytes transformation: substitute bytes using S-box */
+// SubBytes transformation: substitute bytes using S-box 
 void sub_bytes(aes_state* state);
 
-/* ShiftRows transformation: rotate rows */
+// ShiftRows transformation: rotate rows 
 void shift_rows(aes_state* state);
-
+// Rotate a 4-byte word left by one byte 
+void rot_word(unsigned char *word);
+// Substitute each byte in a 4-byte word using the S-box 
+void sub_word(unsigned char *word);
 #endif

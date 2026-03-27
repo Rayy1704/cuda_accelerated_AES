@@ -88,3 +88,33 @@ void sub_word(unsigned char *word) {
         word[i] = sbox[word[i]];
     }
 }
+void rcon(unsigned char * word,int round){
+    word[0]^=Rcon[round];
+}
+unsigned char* key_expansion(const unsigned char *key){
+    unsigned char*expanded_keys=malloc(176); // Allocate memory for expanded keys (11 round keys of 16 bytes each)
+    if (expanded_keys == NULL) {
+        perror("Expanded keys buffer allocation failed");
+        return NULL;
+    }
+    // Copy first 16 bytes (Round 0 Key)
+    for (int i = 0; i < 16; i++) {
+        expanded_keys[i] = key[i];
+    }
+    for(int i=16;i<176;i+=4){ // Generate the rest of the round keys
+        unsigned char temp[4];
+        // Grab the previous 4 bytes
+        for (int j = 0; j < 4; j++) {
+            temp[j] = expanded_keys[i - 4 + j]; // Copy the last 4 bytes of the previous round key into temp
+        }        
+        if(i%16==0){ // Every 16 bytes, apply the key schedule core (RotWord, SubWord, Rcon)
+            rot_word(temp);
+            sub_word(temp);
+            rcon(temp,i/16);
+        }
+        for(int j=0;j<4;j++){ // XOR the temp with the 4 bytes 16 positions back to generate the new key byte
+            expanded_keys[i+j]=expanded_keys[i-16+j]^temp[j];
+        }
+    }
+    return expanded_keys; // Return the pointer to the expanded keys buffer
+}    
