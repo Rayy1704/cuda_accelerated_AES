@@ -14,14 +14,14 @@ int main(int argc, char *argv[]) {
     const char* out_filename = (argc == 4) ? argv[3] : "output.txt";
     size_t data_len = 0;
     unsigned char *key_buf = read_key_file(keyFileName);
-    unsigned char *buf = read_file(fileName, &data_len);
-    if (buf == NULL) {
-        fprintf(stderr, "Failed to read file: %s\n", fileName);
-        return 1;
-    }
     if (key_buf == NULL) {
         fprintf(stderr, "Failed to read key file: %s\n", keyFileName);
-        free(buf);
+        return 1;
+    }
+    unsigned char *buf = read_file(fileName, &data_len);
+    if (buf == NULL) {
+        free(key_buf);
+        fprintf(stderr, "Failed to read file: %s\n", fileName);
         return 1;
     }
     unsigned char * expanded_keys_ptr = key_expansion(key_buf);
