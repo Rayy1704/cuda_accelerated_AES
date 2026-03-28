@@ -2,13 +2,13 @@
 #define AES_H
 
 // Key expansion function to generate round keys from the original key
+typedef struct {
+    unsigned char matrix[4][4];
+} aes_state;
 unsigned char* key_expansion(const unsigned char *key);
 #endif
 
 // AES state matrix representation 
-// typedef struct {
-//     unsigned char matrix[4][4];
-// } aes_state;
 // Populate AES state matrix from input bytes (column-major order) 
 // void populate_state(aes_state * state, unsigned char * input, size_t len);
 // SubBytes transformation: substitute bytes using S-box 

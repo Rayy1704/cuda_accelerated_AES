@@ -1,5 +1,11 @@
 #include <stdlib.h>
 #include "aes.h"
+static const unsigned char mix_matrix[4][4] = {
+    {0x02, 0x03, 0x01, 0x01},
+    {0x01, 0x02, 0x03, 0x01},
+    {0x01, 0x01, 0x02, 0x03},
+    {0x03, 0x01, 0x01, 0x02}
+};
 static const unsigned char rsbox[256] = {
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -119,3 +125,44 @@ unsigned char* key_expansion(const unsigned char *key){
     }
     return expanded_keys; // Return the pointer to the expanded keys buffer
 }    
+void aes_encrypt(unsigned char * data,unsigned char * expanded_keys){
+    aes_state state;
+    populate_state(&state, data, 16); // Populate the state matrix with the input data (16 bytes for AES-128)
+    // Initial AddRoundKey
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            state.matrix[r][c] ^= expanded_keys[r + c * 4]; // XOR the state with the first round key (round 0)
+        }
+    }
+    // 9 main rounds 
+    for(int i=0;i<9;i++){
+        sub_bytes(&state); //Subbytes transformation
+        shift_rows(&state); //ShiftRows transformation
+        // implement mixcolumns function 
+    }
+}
+unsigned char multiply(unsigned char a, unsigned char b) {
+    if (a == 1) return b;
+    if (a == 2) return xtime(b);
+    if (a == 3) return xtime(b) ^ b;
+    return 0;
+}
+
+unsigned char xtime(unsigned char x) {
+    return (x << 1) ^ (((x >> 7) & 1) * 0x1b);
+}
+void mixcolumns(aes_state*state){
+    for (int i=0;i<4;i++){
+        unsigned char col[4];
+        for (int j=0;j<4;j++){
+            col[j]=state->matrix[j][i]; // Extract the current column from the state matrix
+            state-mix_matrix[j][i]=0; // Clear the current column in the state matrix to prepare for the new mixed values
+        }
+        
+        for(int j=0;j<4;j++){
+            for(int k=0;k<4;k++){
+                state->matrix[j][i]^=multiply(col[k],mix_matrix[j][k]); // Multiply the current column by the mix matrix and XOR it back into the state
+            }
+        }
+    }
+}
