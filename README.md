@@ -1,16 +1,16 @@
 # ⚡ GPU-Accelerated AES Cryptography (CUDA)
 
-![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![C](https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white)
 ![CUDA](https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
+![Make](https://img.shields.io/badge/Make-064F8C?style=for-the-badge&logo=make&logoColor=white)
 
 > **A high-performance implementation of the Advanced Encryption Standard (AES-128) leveraging NVIDIA's Parallel Compute Architecture.**
 
 ---
 
 ## 🛠️ Tech Stack & Tools
-* **Language:** C++17 / CUDA C
+* **Language:** C / CUDA C
 * **Parallel Computing:** NVIDIA CUDA Toolkit (v12.x+)
 * **Build System:** CMake
 * **Profiling:** NVIDIA Nsight Systems & Nsight Compute
