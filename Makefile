@@ -10,7 +10,7 @@ HDRS = aes.h io.h
 all: $(TARGET)
 
 run: $(TARGET)
-	@./$(TARGET) test.txt
+	@./$(TARGET) data.txt key.txt output.txt
 
 $(TARGET): $(SRCS) $(HDRS)
 	@$(CC) $(CFLAGS) -o $@ $(SRCS)

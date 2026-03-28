@@ -1,8 +1,8 @@
 #include "io.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+
 
 // Helper to get the size of a file using stat
 long get_file_size_stat(const char *filename) {

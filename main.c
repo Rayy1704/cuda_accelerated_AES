@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "io.h"
-
-
+#include "aes.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 3 || argc > 4) {
@@ -32,20 +31,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     free(key_buf);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    aes_encrypt(buf, expanded_keys_ptr, data_len);
     write_buf_to_file(buf, data_len, out_filename);
     free(expanded_keys_ptr);
     free(buf);

@@ -6,19 +6,6 @@ typedef struct {
     unsigned char matrix[4][4];
 } aes_state;
 unsigned char* key_expansion(const unsigned char *key);
+// AES encryption function that takes input data, expanded keys, and the length of the data
+void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len);
 #endif
-
-// AES state matrix representation 
-// Populate AES state matrix from input bytes (column-major order) 
-// void populate_state(aes_state * state, unsigned char * input, size_t len);
-// SubBytes transformation: substitute bytes using S-box 
-// void sub_bytes(aes_state* state);
-// ShiftRows transformation: rotate rows 
-// void shift_rows(aes_state* state);
-// Rotate a 4-byte word left by one byte 
-// void rot_word(unsigned char *word);
-// Substitute each byte in a 4-byte word using the S-box 
-// void sub_word(unsigned char *word);
-// XOR the first byte of the word with the round constant for the given round
-// void rcon(unsigned char * word,int round);
-
