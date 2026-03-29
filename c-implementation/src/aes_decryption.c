@@ -56,4 +56,10 @@ void inv_shift_rows(aes_state*state){
     state->matrix[3][2] = state->matrix[3][3];
     state->matrix[3][3] = temp;
 }
+unsigned char multiply(unsigned char a, unsigned char b) {
+    if (a == 0x09) return xtime(xtime(xtime(b))) ^ b;
+    if(a==0x0b) return xtime(xtime(xtime(b)))^xtime(b)^b;
+    if(a==0x0d) return xtime(xtime(xtime(b)))^xtime(xtime(b))^b;
+    if(a==0x0e) return xtime(xtime(xtime(b)^b))^xtime(b);
+    return 0;
 }
