@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "aes_encrypt.h"
+#include "aes_encryption.h"
 static const unsigned char mix_matrix[4][4] = {
     {0x02, 0x03, 0x01, 0x01},
     {0x01, 0x02, 0x03, 0x01},
