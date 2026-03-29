@@ -8,4 +8,6 @@ typedef struct {
 unsigned char* key_expansion(const unsigned char *key);
 // AES encryption function that takes input data, expanded keys, and the length of the data
 void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len);
+void populate_state(aes_state * state, unsigned char * input);
+void add_round_key(aes_state * state, unsigned char * round_key);
 #endif
