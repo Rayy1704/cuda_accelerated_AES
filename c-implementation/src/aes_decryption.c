@@ -80,7 +80,7 @@ void inv_mix_columns(aes_state*state){
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     aes_state state;
     for(size_t i=0;i<len;i+=16){
-        populate_state(data+i,&state); // Populate the state matrix with the current 16-byte block of data)
+        populate_state(&state,data+i); // Populate the state matrix with the current 16-byte block of data)
         // Initial round only add round key and inverse shift rows and inverse sub bytes
         add_round_key(&state,expanded_keys,10); // Add the final round key to the state
         for(int round =9;round>0;round--){
@@ -91,7 +91,7 @@ void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
         }
         //final round (without inverse mix columns)
         inv_shift_rows(&state); // Final Inverse ShiftRows transformation
-        inv_sub_box(&state); // Final Inverse SubBytes transformation
+        inv_sub_bytes(&state); // Final Inverse SubBytes transformation
         add_round_key(&state,expanded_keys,0); // Add the initial round key to the state
         // Copy the decrypted state back to the data buffer
         for(int r=0;r<4;r++){
