@@ -1,5 +1,4 @@
 #include <aes_decryption.h>
-#include <aes_encryption.h> //for add round key function and populate state function and aes state structure 
 static const unsigned char rsbox[256] = {
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -24,7 +23,7 @@ static const unsigned char inverse_mix_matrix[4][4] = {
     {0x0d, 0x09, 0x0e, 0x0b},
     {0x0b, 0x0d, 0x09, 0x0e}
 };
-void inv_sub_box(aes_state*state){
+void inv_sub_bytes(aes_state*state){
     for(int r=0;r<4;r++){
         for(int c=0;c<4;c++){
             state->matrix[r][c]=rsbox[state->matrix[r][c]]; //select the byte from the inverse sbox using the current byte as an index
@@ -76,6 +75,30 @@ void inv_mix_columns(aes_state*state){
             ^multiply(inverse_mix_matrix[j][1],col[1])
             ^multiply(inverse_mix_matrix[j][2],col[2])
             ^multiply(inverse_mix_matrix[j][3],col[3]); // Multiply the current column by the inverse mix matrix and XOR it back into the state
+        }
+    }
+}
+void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
+    aes_state state;
+    for(size_t i=0;i<len;i+=16){
+        populate_state(data+i,&state); // Populate the state matrix with the current 16-byte block of data)
+        // Initial round only add round key and inverse shift rows and inverse sub bytes
+        add_round_key(&state,expanded_keys,10); // Add the final round key to the state
+        for(int round =9;round>0;round--){
+            inv_shift_rows(&state); // Inverse ShiftRows transformation
+            inv_sub_bytes(&state); // Inverse SubBytes transformation
+            add_round_key(&state,expanded_keys,round); // Add the round key for the
+            inv_mix_columns(&state); // Inverse MixColumns transformation
+        }
+        //final round (without inverse mix columns)
+        inv_shift_rows(&state); // Final Inverse ShiftRows transformation
+        inv_sub_box(&state); // Final Inverse SubBytes transformation
+        add_round_key(&state,expanded_keys,0); // Add the initial round key to the state
+        // Copy the decrypted state back to the data buffer
+        for(int r=0;r<4;r++){
+            for(int c=0;c<4;c++){
+                data[i + c*4 + r] = state.matrix[r][c]; // Write the decrypted byte back to the data buffer in column-major order
+            }
         }
     }
 }
