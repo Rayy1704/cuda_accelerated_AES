@@ -1,4 +1,5 @@
 #include "aes.h"
+
 static const unsigned char mix_matrix[4][4] = {
     {0x02, 0x03, 0x01, 0x01},
     {0x01, 0x02, 0x03, 0x01},
@@ -32,6 +33,7 @@ void sub_bytes(aes_state*state){
         }
     }
 }
+
 void shift_rows(aes_state* state) {
     unsigned char temp;
 
@@ -57,6 +59,7 @@ void shift_rows(aes_state* state) {
     state->matrix[3][1] = state->matrix[3][0];
     state->matrix[3][0] = temp;
 }
+
 void rot_word(unsigned char *word) {
     unsigned char temp = word[0];
     for (int i = 0; i < 3; i++) {
