@@ -5,7 +5,7 @@ INC_DIR = include
 INPUT_DIR = input
 OUTPUT_DIR = output
 TARGET = aes
-SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/aes_encryption.c $(SRC_DIR)/io.c
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/aes_encryption.c $(SRC_DIR)/aes_decryption.c $(SRC_DIR)/aes_core.c $(SRC_DIR)/io.c
 HDRS = $(INC_DIR)/aes.h $(INC_DIR)/io.h
 
 .PHONY: all run clean
