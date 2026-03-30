@@ -1,4 +1,5 @@
-#include <aes_decryption.h>
+#include <aes.h>
+
 static const unsigned char rsbox[256] = {
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -23,6 +24,8 @@ static const unsigned char inverse_mix_matrix[4][4] = {
     {0x0d, 0x09, 0x0e, 0x0b},
     {0x0b, 0x0d, 0x09, 0x0e}
 };
+
+
 void inv_sub_bytes(aes_state*state){
     for(int r=0;r<4;r++){
         for(int c=0;c<4;c++){
@@ -30,6 +33,7 @@ void inv_sub_bytes(aes_state*state){
         }
     }
 }
+
 void inv_shift_rows(aes_state*state){
     unsigned char temp;
 
@@ -55,13 +59,7 @@ void inv_shift_rows(aes_state*state){
     state->matrix[3][2] = state->matrix[3][3];
     state->matrix[3][3] = temp;
 }
-unsigned char multiply(unsigned char a, unsigned char b) {
-    if (a == 0x09) return xtime(xtime(xtime(b))) ^ b;
-    if(a==0x0b) return xtime(xtime(xtime(b)))^xtime(b)^b;
-    if(a==0x0d) return xtime(xtime(xtime(b)))^xtime(xtime(b))^b;
-    if(a==0x0e) return xtime(xtime(xtime(b)^b))^xtime(b);
-    return 0;
-}
+
 void inv_mix_columns(aes_state*state){
     for (int i=0;i<4;i++){
         unsigned char col[4];
@@ -78,6 +76,7 @@ void inv_mix_columns(aes_state*state){
         }
     }
 }
+
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     aes_state state;
     for(size_t i=0;i<len;i+=16){
