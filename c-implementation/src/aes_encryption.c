@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "aes_encryption.h"
+#include "aes.h"
 static const unsigned char mix_matrix[4][4] = {
     {0x02, 0x03, 0x01, 0x01},
     {0x01, 0x02, 0x03, 0x01},
@@ -25,17 +23,8 @@ static const unsigned char sbox[256] = {
     0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
-static const unsigned char Rcon[11] = {
-    0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
-};
-void populate_state(aes_state * state, unsigned char * input){
-    // Optimized for linear cache access
-    for (int c = 0; c < 4; c++) {
-        for (int r = 0; r < 4; r++) {
-            state->matrix[r][c] = input[c * 4 + r]; // Fill the state matrix in column-major order (first fill down columns, then move to the next column)
-        }
-    }
-}
+
+
 void sub_bytes(aes_state*state){
     for(int r=0;r<4;r++){
         for(int c=0;c<4;c++){
@@ -80,45 +69,7 @@ void sub_word(unsigned char *word) {
         word[i] = sbox[word[i]];
     }
 }
-void rcon(unsigned char * word,int round){
-    word[0]^=Rcon[round];
-}
-unsigned char* key_expansion(const unsigned char *key){
-    unsigned char*expanded_keys=malloc(176); // Allocate memory for expanded keys (11 round keys of 16 bytes each)
-    if (expanded_keys == NULL) {
-        perror( "Expanded keys buffer allocation failed");
-        return NULL;
-    }
-    // Copy first 16 bytes (Round 0 Key)
-    for (int i = 0; i < 16; i++) {
-        expanded_keys[i] = key[i];
-    }
-    for(int i=16;i<176;i+=4){ // Generate the rest of the round keys
-        unsigned char temp[4];
-        // Grab the previous 4 bytes
-        for (int j = 0; j < 4; j++) {
-            temp[j] = expanded_keys[i - 4 + j]; // Copy the last 4 bytes of the previous round key into temp
-        }        
-        if(i%16==0){ // Every 16 bytes, apply the key schedule core (RotWord, SubWord, Rcon)
-            rot_word(temp);
-            sub_word(temp);
-            rcon(temp,i/16);
-        }
-        for(int j=0;j<4;j++){ // XOR the temp with the 4 bytes 16 positions back to generate the new key byte
-            expanded_keys[i+j]=expanded_keys[i-16+j]^temp[j];
-        }
-    }
-    return expanded_keys; // Return the pointer to the expanded keys buffer
-}    
-unsigned char xtime(unsigned char x) {
-    return (x << 1) ^ (((x >> 7) & 1) * 0x1b);
-}
-unsigned char multiply(unsigned char a, unsigned char b) {
-    if (a == 1) return b;
-    if (a == 2) return xtime(b);
-    if (a == 3) return xtime(b) ^ b;
-    return 0;
-}
+
 void mixcolumns(aes_state*state){
     for (int i=0;i<4;i++){
         unsigned char col[4];
@@ -135,14 +86,7 @@ void mixcolumns(aes_state*state){
         }
     }
 }
-void add_round_key(aes_state*state,unsigned char *expanded_keys,int round){
-    unsigned char *round_key = &expanded_keys[round * 16];
-    for (int r = 0; r < 4; r++) {
-        for (int c = 0; c < 4; c++) {
-            state->matrix[r][c] ^= round_key[r + c * 4]; // XOR the state with the current round key
-        }
-    }
-}
+
 void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     aes_state state;
     for(size_t t=0;t<len;t+=16){ // Process each 16-byte block of data
