@@ -91,7 +91,6 @@ void write_buf_to_file(const unsigned char *buf, size_t len, const char *out_fil
     for (size_t i = 0; i < len; i++) {
         fprintf(fp, "%02x ", buf[i]);
     }
-    fprintf(fp, "\n");
     fclose(fp);
 }
 unsigned char * read_key_file(const char *keyFileName) {
