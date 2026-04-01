@@ -82,7 +82,7 @@ unsigned char* read_file(const char* fileName, size_t *out_len){
     return buf;
 }
 
-void write_buf_to_file(const unsigned char *buf, size_t len, const char *out_filename) {
+void write_buf_to_file(const unsigned char *buf, size_t len, const char *out_filename) { // Write the binary data in buf to a file as hex string
     FILE *fp = fopen(out_filename, "w");
     if (fp == NULL) {
         perror("Error opening file for writing");
