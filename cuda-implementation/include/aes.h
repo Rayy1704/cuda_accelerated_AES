@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <cuda_runtime.h>
 
 typedef struct {// AES state is a 4x4 matrix of bytes
     unsigned char matrix[4][4];
