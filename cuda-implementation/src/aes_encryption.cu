@@ -79,17 +79,25 @@ void encryption_process(aes_state state,unsigned char *data,unsigned char *expan
             }
         }
 }
-__global__ void aes_encrypt_kernel(unsigned char * data, unsigned char* expanded_keys, size_t len){
-    int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
-    int offset=idx*16; // Each thread processes a 16-byte block of data
-    if(offset<len){ // Ensure we don't go out of bounds
-        aes_state state;
-        encryption_process(state, data, expanded_keys, offset); // Call the encryption process for the assigned block of data
-    }
-}
+// __global__ void aes_encrypt_kernel(unsigned char * data, unsigned char* expanded_keys, size_t len){
+//     int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
+//     int offset=idx*16; // Each thread processes a 16-byte block of data
+//     if(offset<len){ // Ensure we don't go out of bounds
+//         aes_state state;
+//         encryption_process(state, data, expanded_keys, offset); // Call the encryption process for the assigned block of data
+//     }
+// }
+
 void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
-    aes_state state;
-    for(size_t t=0;t<len;t+=16){ // Process each 16-byte block of data
-        encryption_process(state, data, expanded_keys, t);
-    } 
+    unsigned char * d_data;
+    unsigned char * expanded_keys_device;
+    size_t data_size=len*sizeof(unsigned char);
+    size_t keys_size=176*sizeof(unsigned char); // 176 bytes for AES-128
+    // Allocate memory on the device for data and expanded keys
+    cudaMalloc(&d_data, data_size);
+    cudaMalloc(&expanded_keys_device, keys_size);
+    // Copy data and expanded keys from host to device
+    cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(expanded_keys_device, expanded_keys, keys_size, cudaMemcpyHostToDevice);
+    // Calculate grid and block dimensions
 }
