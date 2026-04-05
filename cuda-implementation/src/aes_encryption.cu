@@ -90,14 +90,11 @@ void encryption_process(aes_state state,unsigned char *data,unsigned char *expan
 
 void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     unsigned char * d_data;
-    unsigned char * expanded_keys_device;
+    unsigned char * d_expanded_keys;
     size_t data_size=len*sizeof(unsigned char);
     size_t keys_size=176*sizeof(unsigned char); // 176 bytes for AES-128
-    // Allocate memory on the device for data and expanded keys
     cudaMalloc(&d_data, data_size);
-    cudaMalloc(&expanded_keys_device, keys_size);
-    // Copy data and expanded keys from host to device
+    cudaMalloc(&d_expanded_keys, keys_size);
     cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice);
-    cudaMemcpy(expanded_keys_device, expanded_keys, keys_size, cudaMemcpyHostToDevice);
-    // Calculate grid and block dimensions
+    cudaMemcpy(d_expanded_keys, expanded_keys, keys_size, cudaMemcpyHostToDevice);
 }
