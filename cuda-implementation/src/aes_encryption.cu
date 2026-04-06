@@ -65,18 +65,18 @@ __global__ void aes_encrypt_kernel(unsigned char * data, size_t lensize_t len){
         aes_state state;
         populate_state(&state, data+t); // Populate the state matrix with the input data (16 bytes for AES-128)
         // Initial AddRoundKey
-        add_round_key(&state, expanded_keys, 0);
+        add_round_key(&state, d_const_expanded_keys, 0);
         // 9 main rounds of AES (SubBytes, ShiftRows, MixColumns, AddRoundKey)
         for(int i=0;i<9;i++){
             sub_bytes(&state); //Subbytes transformation
             shift_rows(&state); //ShiftRows transformation
             mixcolumns(&state); //MixColumns transformation
-            add_round_key(&state,expanded_keys,i+1); //AddRoundKey transformation with the next round key
+            add_round_key(&state,d_const_expanded_keys,i+1); //AddRoundKey transformation with the next round key
         }
         // Final round (without MixColumns)
         sub_bytes(&state); //Subbytes transformation
         shift_rows(&state); //ShiftRows transformation
-        add_round_key(&state,expanded_keys,10); //AddRoundKey transformation with the final round key (round 10)
+        add_round_key(&state,d_const_expanded_keys,10); //AddRoundKey transformation with the final round key (round 10)
         // Copy the encrypted state back to the data buffer
         for (int c = 0; c < 4; c++) {
             for (int r = 0; r < 4; r++) {
