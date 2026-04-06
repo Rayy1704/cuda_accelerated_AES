@@ -57,10 +57,8 @@ __device__ void mixcolumns(aes_state*state){
         }
     }
 }
-void encryption_process(aes_state state,unsigned char *data,unsigned char *expanded_keys,size_t t){
-    
-}
-__global__ void aes_encrypt_kernel(unsigned char * data, unsigned char* expanded_keys, size_t lensize_t len){
+
+__global__ void aes_encrypt_kernel(unsigned char * data, size_t lensize_t len){
     int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
     int offset=idx*16; // Each thread processes a 16-byte block of data
     if(offset<len){ // Ensure we don't go out of bounds
@@ -98,7 +96,7 @@ void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     cudaMemcpyToSymbol(d_const_expanded_keys, expanded_keys, 176);
     int threads_per_block=256;
     int blocks=((len+16-1)/16)/threads_per_block; // Calculate the number of blocks needed to process all data
-    aes_encrypt_kernel<<<blocks, threads_per_block>>>(d_data, d_expanded_keys,len); // Launch the AES encryption kernel on the GPU
+    aes_encrypt_kernel<<<blocks, threads_per_block>>>(d_data,len); // Launch the AES encryption kernel on the GPU
     cudaMemcpy(data, d_data, data_size, cudaMemcpyDeviceToHost);
     cudaFree(d_data);
     cudaFree(d_expanded_keys);
