@@ -1,6 +1,6 @@
 #include "aes.h"
-
-static const unsigned char mix_matrix[4][4] = {
+__constant__ unsigned char d_const_expanded_keys[176]; // 176 bytes for AES-128 expanded keys
+__constant__ unsigned char mix_matrix[4][4] = {
     {0x02, 0x03, 0x01, 0x01},
     {0x01, 0x02, 0x03, 0x01},
     {0x01, 0x01, 0x02, 0x03},
@@ -94,9 +94,8 @@ void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     size_t data_size=len*sizeof(unsigned char);
     size_t keys_size=176*sizeof(unsigned char); // 176 bytes for AES-128
     cudaMalloc(&d_data, data_size);
-    cudaMalloc(&d_expanded_keys, keys_size);
     cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_expanded_keys, expanded_keys, keys_size, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(d_const_expanded_keys, expanded_keys, 176);
     int threads_per_block=256;
     int blocks=((len+16-1)/16)/threads_per_block; // Calculate the number of blocks needed to process all data
     aes_encrypt_kernel<<<blocks, threads_per_block>>>(d_data, d_expanded_keys,len); // Launch the AES encryption kernel on the GPU
