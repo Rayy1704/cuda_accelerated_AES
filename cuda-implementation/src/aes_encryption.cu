@@ -7,7 +7,7 @@ static const unsigned char mix_matrix[4][4] = {
     {0x03, 0x01, 0x01, 0x02}
 };
 
-void sub_bytes(aes_state*state){
+__device__ void sub_bytes(aes_state*state){
     for(int r=0;r<4;r++){
         for(int c=0;c<4;c++){
             state->matrix[r][c]=sbox[state->matrix[r][c]]; // Select the byte from the sbox using the current byte as an index
@@ -15,7 +15,7 @@ void sub_bytes(aes_state*state){
     }
 }
 
-void shift_rows(aes_state* state) {
+__device__ void shift_rows(aes_state* state) {
     unsigned char temp;
 
     // Row 1: Left shift by 1 ([0,1,2,3] -> [1,2,3,0])
@@ -41,7 +41,7 @@ void shift_rows(aes_state* state) {
     state->matrix[3][0] = temp;
 }
 
-void mixcolumns(aes_state*state){
+__device__ void mixcolumns(aes_state*state){
     for (int i=0;i<4;i++){
         unsigned char col[4];
         for (int j=0;j<4;j++){
