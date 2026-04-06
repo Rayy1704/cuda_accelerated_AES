@@ -58,7 +58,14 @@ __device__ void mixcolumns(aes_state*state){
     }
 }
 void encryption_process(aes_state state,unsigned char *data,unsigned char *expanded_keys,size_t t){
-    populate_state(&state, data+t); // Populate the state matrix with the input data (16 bytes for AES-128)
+    
+}
+__global__ void aes_encrypt_kernel(unsigned char * data, unsigned char* expanded_keys, size_t lensize_t len){
+    int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
+    int offset=idx*16; // Each thread processes a 16-byte block of data
+    if(offset<len){ // Ensure we don't go out of bounds
+        aes_state state;
+        populate_state(&state, data+t); // Populate the state matrix with the input data (16 bytes for AES-128)
         // Initial AddRoundKey
         add_round_key(&state, expanded_keys, 0);
         // 9 main rounds of AES (SubBytes, ShiftRows, MixColumns, AddRoundKey)
@@ -77,14 +84,7 @@ void encryption_process(aes_state state,unsigned char *data,unsigned char *expan
             for (int r = 0; r < 4; r++) {
                 data[t+c * 4 + r] = state.matrix[r][c]; // Copy the state matrix back to the data buffer in column-major order
             }
-        }
-}
-__global__ void aes_encrypt_kernel(unsigned char * data, unsigned char* expanded_keys, size_t lensize_t len){
-    int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
-    int offset=idx*16; // Each thread processes a 16-byte block of data
-    if(offset<len){ // Ensure we don't go out of bounds
-        aes_state state;
-        encryption_process(state, data, expanded_keys, offset); // Call the encryption process for the assigned block of data
+        }    
     }
 }
 
