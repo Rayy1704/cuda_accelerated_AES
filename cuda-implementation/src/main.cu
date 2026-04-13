@@ -34,8 +34,9 @@ int main(int argc, char *argv[]) {
     printf("1) Encrypt\n2) Decrypt\nChoose an option: ");
     int choice;
     scanf("%d", &choice);
-    if (choice == 1) //{
+    if (choice == 1) {
         aes_encrypt(buf, expanded_keys_ptr, data_len);
+    }
     // } else if (choice == 2) {
     //     aes_decrypt(buf, expanded_keys_ptr, data_len);
     // }

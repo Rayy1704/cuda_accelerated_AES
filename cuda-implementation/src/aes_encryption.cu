@@ -76,12 +76,12 @@ __device__ void mixcolumns(aes_state*state){
     }
 }
 
-__global__ void aes_encrypt_kernel(unsigned char * data, size_t lensize_t len){
+__global__ void aes_encrypt_kernel(unsigned char * data, size_t len){
     int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
     int offset=idx*16; // Each thread processes a 16-byte block of data
     if(offset<len){ // Ensure we don't go out of bounds
         aes_state state;
-        populate_state(&state, data+t); // Populate the state matrix with the input data (16 bytes for AES-128)
+        populate_state(&state, data+offset); // Populate the state matrix with the input data (16 bytes for AES-128)
         // Initial AddRoundKey
         add_round_key(&state, d_const_expanded_keys, 0);
         // 9 main rounds of AES (SubBytes, ShiftRows, MixColumns, AddRoundKey)
@@ -116,5 +116,4 @@ void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     aes_encrypt_kernel<<<blocks, threads_per_block>>>(d_data,len); // Launch the AES encryption kernel on the GPU
     cudaMemcpy(data, d_data, data_size, cudaMemcpyDeviceToHost);
     cudaFree(d_data);
-    cudaFree(d_expanded_keys);
 }
