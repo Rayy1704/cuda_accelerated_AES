@@ -33,13 +33,17 @@ int main(int argc, char *argv[]) {
     free(key_buf);
     printf("1) Encrypt\n2) Decrypt\nChoose an option: ");
     int choice;
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) {
+        fprintf(stderr, "Invalid option input\n");
+        free(expanded_keys_ptr);
+        free(buf);
+        return 1;
+    }
     if (choice == 1) {
         aes_encrypt(buf, expanded_keys_ptr, data_len);
-    }
-    // } else if (choice == 2) {
-    //     aes_decrypt(buf, expanded_keys_ptr, data_len);
-    // }
+    } else if (choice == 2) {
+         //aes_decrypt(buf, expanded_keys_ptr, data_len);
+     }
     write_buf_to_file(buf, data_len, out_filename);
     free(expanded_keys_ptr);
     free(buf);
