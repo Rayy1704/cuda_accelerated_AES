@@ -98,7 +98,7 @@ __global__ void aes_encrypt_kernel(unsigned char * data, size_t len){
         // Copy the encrypted state back to the data buffer
         for (int c = 0; c < 4; c++) {
             for (int r = 0; r < 4; r++) {
-                data[t+c * 4 + r] = state.matrix[r][c]; // Copy the state matrix back to the data buffer in column-major order
+                data[offset+c * 4 + r] = state.matrix[r][c]; // Copy the state matrix back to the data buffer in column-major order
             }
         }    
     }
