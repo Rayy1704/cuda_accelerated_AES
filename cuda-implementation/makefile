@@ -1,5 +1,5 @@
 NVCC = nvcc
-NVCCFLAGS = -O3 -Xcompiler -Wall,-Wextra
+NVCCFLAGS = -O3 -rdc=true -Xcompiler -Wall,-Wextra
 SRC_DIR = src
 INC_DIR = include
 INPUT_DIR = input

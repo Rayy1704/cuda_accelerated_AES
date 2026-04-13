@@ -16,13 +16,13 @@ void aes_encrypt(unsigned char *input, unsigned char *expanded_keys, size_t data
 
 unsigned char* key_expansion(const unsigned char *key);// Expands the original key into multiple round keys for AES encryption
 
-unsigned char xtime(unsigned char x);// Multiplies a byte by 2 in GF(2^8)
+__host__ __device__ unsigned char xtime(unsigned char x);// Multiplies a byte by 2 in GF(2^8)
 
-unsigned char multiply(unsigned char a, unsigned char b);// Multiplies two bytes in GF(2^8) using the xtime function
+__host__ __device__ unsigned char multiply(unsigned char a, unsigned char b);// Multiplies two bytes in GF(2^8) using the xtime function
 
-void populate_state(aes_state * state, unsigned char * input);// Populates the AES state matrix with input data
+__device__ void populate_state(aes_state * state, unsigned char * input);// Populates the AES state matrix with input data
 
-void add_round_key(aes_state * state, unsigned char * expanded_keys, int round);// Adds the round key to the state matrix for a given round
+__device__ void add_round_key(aes_state * state, unsigned char * expanded_keys, int round);// Adds the round key to the state matrix for a given round
 
 void aes_decrypt(unsigned char *input, unsigned char *expanded_keys, size_t data_len);// Decrypts the input data using the expanded keys
 
