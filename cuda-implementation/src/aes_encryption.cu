@@ -106,7 +106,6 @@ __global__ void aes_encrypt_kernel(unsigned char * data, size_t lensize_t len){
 
 void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     unsigned char * d_data;
-    unsigned char * d_expanded_keys;
     size_t data_size=len*sizeof(unsigned char);
     size_t keys_size=176*sizeof(unsigned char); // 176 bytes for AES-128
     cudaMalloc(&d_data, data_size);
