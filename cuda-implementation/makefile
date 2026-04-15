@@ -22,4 +22,4 @@ $(TARGET): $(SRCS) $(HDRS)
 
 clean:
 	@rm -f $(TARGET) $(OUTPUT_DIR)/output.txt
-	//
+	
