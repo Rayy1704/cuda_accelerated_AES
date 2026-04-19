@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include "io.h"
 #include "aes.h"
 
@@ -39,11 +40,23 @@ int main(int argc, char *argv[]) {
         free(buf);
         return 1;
     }
+
+    struct timeval start_time;
+    struct timeval end_time;
+    double elapsed_ms = 0.0;
+
+    gettimeofday(&start_time, NULL);
     if (choice == 1) {
         aes_encrypt(buf, expanded_keys_ptr, data_len);
     } else if (choice == 2) {
          //aes_decrypt(buf, expanded_keys_ptr, data_len);
      }
+    gettimeofday(&end_time, NULL);
+
+    elapsed_ms = (end_time.tv_sec - start_time.tv_sec) * 1000.0;
+    elapsed_ms += (end_time.tv_usec - start_time.tv_usec) / 1000.0;
+    printf("Operation time: %.3f ms\n", elapsed_ms);
+
     write_buf_to_file(buf, data_len, out_filename);
     free(expanded_keys_ptr);
     free(buf);
