@@ -111,7 +111,7 @@ void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice);
     cudaMemcpyToSymbol(d_const_expanded_keys, expanded_keys, 176);
     int threads_per_block=256;
-    int blocks=((len+16-1)/16)/threads_per_block; // Calculate the number of blocks needed to process all data
+    int blocks=((len+15)/16)/threads_per_block; // Calculate the number of blocks needed to process all data
     aes_encrypt_kernel<<<blocks, threads_per_block>>>(d_data,len); // Launch the AES encryption kernel on the GPU
     cudaMemcpy(data, d_data, data_size, cudaMemcpyDeviceToHost);
     cudaFree(d_data);
