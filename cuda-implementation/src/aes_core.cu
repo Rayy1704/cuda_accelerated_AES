@@ -59,7 +59,7 @@ void sub_word(unsigned char *word) {
     }
 }
 unsigned char* key_expansion(const unsigned char *key){
-    unsigned char*expanded_keys=malloc(176); // Allocate memory for expanded keys (11 round keys of 16 bytes each)
+    unsigned char*expanded_keys=(unsigned char*)malloc(176); // Allocate memory for expanded keys (11 round keys of 16 bytes each)
     if (expanded_keys == NULL) {
         perror( "Expanded keys buffer allocation failed");
         return NULL;
