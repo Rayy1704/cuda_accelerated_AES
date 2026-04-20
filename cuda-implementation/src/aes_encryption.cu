@@ -115,6 +115,7 @@ void aes_encrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     dim3 block_dim(threads_per_block, 1, 1);
     dim3 grid_dim((total_blocks + threads_per_block - 1) / threads_per_block, 1, 1); // Ceil division so all AES blocks are covered
     aes_encrypt_kernel<<<grid_dim, block_dim>>>(d_data,len); // Launch the AES encryption kernel on the GPU
+    cudaDeviceSynchronize(); // Wait for the GPU to finish processing
     cudaMemcpy(data, d_data, data_size, cudaMemcpyDeviceToHost);
     cudaFree(d_data);
 }
