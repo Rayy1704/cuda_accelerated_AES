@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "io.h"
-#include "aes.h"
+#include "cuda_aes.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 3 || argc > 4) {
