@@ -1,43 +1,72 @@
-# ⚡ GPU-Accelerated AES Cryptography (CUDA)
+# ⚡ CUDA-Accelerated AES-128 Cryptographic Engine
 
 ![C](https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white)
 ![CUDA](https://img.shields.io/badge/CUDA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 ![Make](https://img.shields.io/badge/Make-064F8C?style=for-the-badge&logo=make&logoColor=white)
 
-> **A high-performance implementation of the Advanced Encryption Standard (AES-128) leveraging NVIDIA's Parallel Compute Architecture.**
+> **A high-throughput, massively parallel implementation of the Advanced Encryption Standard (AES-128), engineered entirely from scratch in plain C and CUDA to bypass global memory bottlenecks.**
+
 
 ---
 
-## 🛠️ Tech Stack & Tools
-* **Language:** C / CUDA C
-* **Parallel Computing:** NVIDIA CUDA Toolkit (v12.x+)
-* **Build System:** CMake
-* **Profiling:** NVIDIA Nsight Systems & Nsight Compute
+## 🛠️ Hardware Environment & Tech Stack
+* **Language:** C / CUDA C (Built entirely manually to deeply understand byte-level cryptographic transformations)
+* **Architecture:** NVIDIA CUDA Toolkit (v12.x+)
+* **Build System:** Make
+* **Host CPU:** Intel(R) Xeon(R) W-2275 CPU @ 3.30GHz (14 Cores)
+* **Device GPU:** NVIDIA RTX A2000 12GB (3328 CUDA Cores)
 * **Environment:** Linux (Ubuntu / GIKI Lab Environment)
 
-## 💎 Key Features
-* **📦 Highly Modularized:** Clean separation between the CPU reference model, CUDA kernels, and File I/O handlers.
-* **🚀 Massive Parallelism:** Maps the AES block-cipher logic to thousands of GPU threads for "embarrassingly parallel" workloads.
-* **🧠 Memory Optimization:** Utilizes `__constant__` memory for S-Box lookups and Shared Memory for Round Key caching to minimize Global Memory latency.
-* **📊 Benchmarking Suite:** Integrated timing using `cudaEvent_t` to compare CPU vs. GPU throughput (Gbps).
-* **🛠️ Hex-to-Byte Pipeline:** Custom-built robust parser for processing hexadecimal text-based input files.
+## 💎 Cryptographic Rigor & Mathematics
+This project does not rely on external cryptographic libraries. The sequential baseline and parallel kernels were implemented from the ground up:
+* **Galois Field Mathematics:** Implemented custom polynomial arithmetic over `GF(2^8)` to handle the mathematical rigor of the `MixColumns` transformation.
+* **NIST FIPS 197 Compliance:** Strict adherence to official specifications, specifically enforcing a **column-major** memory layout for the 4x4 state matrix. This layout is mathematically mandated by AES for accurate shift and mix operations.
+* **Verification:** Algorithm correctness was continuously verified against official NIST test samples throughout development.
 
-## 🏗️ Project Architecture
-The project is strictly modularized to allow for easy extension (e.g., adding RSA or ChaCha20):
-1.  `/src/cpu`: Single-threaded C++ reference implementation for verification.
-2.  `/src/cuda`: Optimized GPU kernels and memory management logic.
-3.  `/src/common`: Shared headers, S-Box tables, and utility functions.
-4.  `/logs`: Dedicated debug stream for intermediate state logging ($4 \times 4$ matrices).
+## 🚀 Architecture & CUDA Optimizations
+Transitioning the sequential block cipher to a massively parallel GPU architecture required precise management of the CUDA memory hierarchy and thread execution:
 
----
+* **Massive Thread-Level Parallelism:** Maps the AES encryption logic to process independent 16-byte payloads concurrently across thousands of GPU threads.
+* **`__constant__` Memory Broadcasting:** Caches the entire AES S-Box and the 176-byte expanded key schedule directly in device constant memory. Because every thread in a warp requires the same cryptographic variables during a round, this allows a single memory fetch to be instantly broadcast to all 32 threads simultaneously.
+* **Strided Memory Access & Cache Utilization:** Due to the NIST-mandated column-major matrix format, thread memory access is naturally strided rather than perfectly coalesced. This is effectively mitigated by the RTX A2000's high-efficiency L1/L2 caches and the massive offloading of bus traffic via the constant memory cache.
+* **Control Divergence Mitigation:** Carefully managed kernel execution paths and minimized setup overhead to prevent thread divergence and maintain maximum warp occupancy.
 
-## 📈 Performance Preview
-| Implementation | File Size | Throughput | Speedup |
-| :--- | :--- | :--- | :--- |
-| **CPU (Sequential)** | 100MB | ~0.5 Gbps | 1x |
-| **GPU (Naive CUDA)** | 100MB | ~12.0 Gbps | 24x |
-| **GPU (Optimized)** | 100MB | **~45.0 Gbps** | **90x** |
+## 🏗️ Project Structure
+The repository is strictly modularized, separating the sequential CPU baseline from the highly optimized GPU engine.
 
----
-*Developed by **Rayyan Hassan Salman** - Computer Science @ GIKI*
+```text
+cuda_accelerated_AES/
+│
+├── /c-implementation/           # Sequential CPU Reference (Baseline & Verification)
+│   ├── /include/                # Core cryptographic prototypes and I/O declarations
+│   │   ├── aes.h
+│   │   └── io.h
+│   ├── /src/
+│   │   ├── main.c               # Entry point and sequential benchmarking
+│   │   ├── aes_core.c           # Core state matrix transformations (SubBytes, ShiftRows, MixColumns)
+│   │   ├── aes_encryption.c     # Forward cipher implementation
+│   │   ├── aes_decryption.c     # Inverse cipher implementation
+│   │   └── io.c                 # Hex-to-byte parsing and state matrix logging
+│   ├── /input/                  # NIST test vectors and plaintext payloads (data.txt, key.txt)
+│   ├── /output/                 # Generated ciphertext and verification outputs
+│   ├── Makefile                 # GCC build instructions for the sequential engine
+│   └── report.pdf               # Initial CPU implementation report
+│
+├── /cuda-implementation/        # Massively Parallel GPU Engine 
+│   ├── /include/                # Device/Host utility headers
+│   │   ├── cuda_aes.h
+│   │   └── io.h
+│   ├── /src/
+│   │   ├── main.cu              # Host (CPU) code: memory allocation, kernel launching, cudaEvent_t timing
+│   │   ├── aes_core.cu          # Device (GPU) code: __global__ execution and warp-level transformations
+│   │   ├── aes_encryption.cu    # CUDA kernel for parallel block encryption
+│   │   ├── aes_decryption.cu    # CUDA kernel for parallel block decryption
+│   │   └── io.c                 # Host-side file I/O operations prior to memory transfer
+│   ├── /input/                  # Bulk payload files for stress-testing and benchmarking
+│   ├── /output/                 # Decrypted validation data
+│   └── makefile                 # NVCC (NVIDIA CUDA Compiler) build instructions
+│
+├── project_manual.pdf           # Comprehensive theoretical background, math breakdown, and architecture documentation
+├── LICENSE                      # MIT License
+└── README.md                    # Project overview, specifications, and performance metrics
