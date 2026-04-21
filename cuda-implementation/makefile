@@ -6,9 +6,8 @@ INPUT_DIR = input
 OUTPUT_DIR = output
 TARGET = aes
 
-# Note the .cu extensions for the CUDA files, while io.c remains standard C
 SRCS = $(SRC_DIR)/main.cu $(SRC_DIR)/aes_encryption.cu  $(SRC_DIR)/aes_core.cu $(SRC_DIR)/io.c
-HDRS = $(INC_DIR)/aes.h $(INC_DIR)/io.h
+HDRS = $(INC_DIR)/cuda_aes.h $(INC_DIR)/io.h
 
 .PHONY: all run clean
 
