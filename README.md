@@ -21,7 +21,7 @@
 ## 💎 Cryptographic Rigor & Mathematics
 This project does not rely on external cryptographic libraries. The sequential baseline and parallel kernels were implemented from the ground up:
 * **Galois Field Mathematics:** Implemented custom polynomial arithmetic over `GF(2^8)` to handle the mathematical rigor of the `MixColumns` transformation.
-* **NIST FIPS 197 Compliance:** Strict adherence to official specifications, specifically enforcing a **column-major** memory layout for the 4x4 state matrix. This layout is mathematically mandated by AES for accurate shift and mix operations.
+* **NIST FIPS 197 Compliance:** Strict adherence to official specifications, specifically enforcing a **column-major** memory layout for the 4x4 state matrix. Thims layout is mathematically mandated by AES for accurate shift and mix operations.
 * **Verification:** Algorithm correctness was continuously verified against official NIST test samples throughout development.
 
 ## 🚀 Architecture & CUDA Optimizations
