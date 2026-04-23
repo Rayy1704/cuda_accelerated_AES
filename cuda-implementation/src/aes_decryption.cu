@@ -83,8 +83,12 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
         //round 0 (initial round)
         add_round_key(&state,expanded_keys,10); // Add the final round key to
         for(int round =9;round>0;round--){
-            
+            inv_shift_rows(&state); // Inverse ShiftRows transformation
+            inv_sub_bytes(&state); // Inverse SubBytes transformation
+            add_round_key(&state,expanded_keys,round); // Add the round key for the
+            inv_mix_columns(&state); // Inverse MixColumns transformation
         }
+        
     }
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
