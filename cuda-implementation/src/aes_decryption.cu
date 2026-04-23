@@ -74,6 +74,13 @@ void inv_mix_columns(aes_state*state){
         }
     }
 }
+__global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
+    int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
+    int offset=idx*16; // Each thread processes a 16-byte block of data
+    if(offset<len){ // Ensure we don't go out of bounds
+    
+    }
+}
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     aes_state state;
     for(size_t i=0;i<len;i+=16){
