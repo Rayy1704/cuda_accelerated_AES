@@ -78,7 +78,13 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
     int idx=blockIdx.x*blockDim.x+threadIdx.x; // Calculate the global thread index
     int offset=idx*16; // Each thread processes a 16-byte block of data
     if(offset<len){ // Ensure we don't go out of bounds
-    
+        aes_state state;
+        populate_state(&state,data+offsetof);
+        //round 0 (initial round)
+        add_round_key(&state,expanded_keys,10); // Add the final round key to
+        for(int round =9;round>0;round--){
+            
+        }
     }
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
