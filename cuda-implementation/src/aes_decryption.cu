@@ -23,3 +23,12 @@ static const unsigned char inverse_mix_matrix[4][4] = {
     {0x0d, 0x09, 0x0e, 0x0b},
     {0x0b, 0x0d, 0x09, 0x0e}
 };
+
+
+void inv_sub_bytes(aes_state*state){
+    for(int r=0;r<4;r++){
+        for(int c=0;c<4;c++){
+            state->matrix[r][c]=rsbox[state->matrix[r][c]]; //select the byte from the inverse sbox using the current byte as an index
+        }
+    }
+}
