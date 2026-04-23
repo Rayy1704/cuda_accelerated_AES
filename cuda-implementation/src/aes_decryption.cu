@@ -93,6 +93,11 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
         inv_sub_bytes(&state); // Final Inverse SubBytes transformation
         add_round_key(&state,expanded_keys,0); // Add the initial round key to the state
     }
+    for(int r=0;r<4;r++){
+            for(int c=0;c<4;c++){
+                data[i + c*4 + r] = state.matrix[r][c]; // Write the decrypted byte back to the data buffer in column-major order
+            }
+        }
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     aes_state state;
