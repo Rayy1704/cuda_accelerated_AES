@@ -57,3 +57,20 @@ void inv_shift_rows(aes_state*state){
     state->matrix[3][2] = state->matrix[3][3];
     state->matrix[3][3] = temp;
 }
+
+void inv_mix_columns(aes_state*state){
+    for (int i=0;i<4;i++){
+        unsigned char col[4];
+        for (int j=0;j<4;j++){
+            col[j]=state->matrix[j][i]; // Extract the current column from the state matrix
+        }
+        
+        for(int j=0;j<4;j++){
+            state->matrix[j][i]=
+             multiply(inverse_mix_matrix[j][0],col[0])
+            ^multiply(inverse_mix_matrix[j][1],col[1])
+            ^multiply(inverse_mix_matrix[j][2],col[2])
+            ^multiply(inverse_mix_matrix[j][3],col[3]); // Multiply the current column by the inverse mix matrix and XOR it back into the state
+        }
+    }
+}
