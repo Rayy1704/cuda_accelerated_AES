@@ -32,3 +32,28 @@ void inv_sub_bytes(aes_state*state){
         }
     }
 }
+void inv_shift_rows(aes_state*state){
+    unsigned char temp;
+
+    // Row 1: right shift by 1 ([1,2,3,0] -> [0,1,2,3])
+    temp = state->matrix[1][3];
+    state->matrix[1][3] = state->matrix[1][2];
+    state->matrix[1][2] = state->matrix[1][1];
+    state->matrix[1][1] = state->matrix[1][0];
+    state->matrix[1][0] = temp;
+
+    // Row 2: rigth shift by 2 ([2,3,0,1] -> [0,1,2,3])
+    unsigned char t0 = state->matrix[2][2];
+    unsigned char t1 = state->matrix[2][3];
+    state->matrix[2][3] = state->matrix[2][1];
+    state->matrix[2][2] = state->matrix[2][0];
+    state->matrix[2][0] = t0;
+    state->matrix[2][1] = t1;
+
+    // Row 3: right shift by 3 (Equivalent to left shift by 1)
+    temp = state->matrix[3][0];
+    state->matrix[3][0] = state->matrix[3][1];
+    state->matrix[3][1] = state->matrix[3][2];
+    state->matrix[3][2] = state->matrix[3][3];
+    state->matrix[3][3] = temp;
+}
