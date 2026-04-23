@@ -88,7 +88,10 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
             add_round_key(&state,expanded_keys,round); // Add the round key for the
             inv_mix_columns(&state); // Inverse MixColumns transformation
         }
-        
+        //final round (without inverse mix columns)
+        inv_shift_rows(&state); // Final Inverse ShiftRows transformation
+        inv_sub_bytes(&state); // Final Inverse SubBytes transformation
+        add_round_key(&state,expanded_keys,0); // Add the initial round key to the state
     }
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
