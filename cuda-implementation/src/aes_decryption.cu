@@ -106,4 +106,8 @@ void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     cudaMalloc(&d_data,data_size); // Allocate memory on the GPU for the data
     cudaMemcpy(d_data,data,data_size,cudaMemcpyHostToDevice); // Copy the data
     cudamemcpyToSymbol(d_const_expanded_keys,expanded_keys,176); // Copy the expanded keys to constant memory on the GPU
+    int threads_per_block=256;
+    int total_blocks =(len+15)/16;
+    dim3 block_size(threads_per_block,1,1);
+    dim3 grid_dim((total_blocks+threads_per_block-1)/threads_per_block,1,1);
 }
