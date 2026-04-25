@@ -100,4 +100,9 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
         }
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
+    unsigned char * d_data;
+    size_t data_size = len*sizeof(unisgned char);
+    cudaMalloc(&d_data,data_size); // Allocate memory on the GPU for the data
+    cudaMemcpy(d_data,data,data_size,cudaMemcpyHostToDevice); // Copy the data
+
 }
