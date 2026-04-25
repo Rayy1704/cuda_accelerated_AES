@@ -17,6 +17,7 @@ static const unsigned char rsbox[256] = {
     0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
+__constant__ unsigned char d_const_expanded_keys[176]; // 176 bytes for AES-128 expanded keys
 static const unsigned char inverse_mix_matrix[4][4] = {
     {0x0e, 0x0b, 0x0d, 0x09},
     {0x09, 0x0e, 0x0b, 0x0d},
@@ -104,5 +105,5 @@ void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     size_t data_size = len*sizeof(unisgned char);
     cudaMalloc(&d_data,data_size); // Allocate memory on the GPU for the data
     cudaMemcpy(d_data,data,data_size,cudaMemcpyHostToDevice); // Copy the data
-
+    cudamemcpyToSymbol(d_const_expanded_keys,expanded_keys,176); // Copy the expanded keys to constant memory on the GPU
 }
