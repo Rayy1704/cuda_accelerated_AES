@@ -102,7 +102,7 @@ __global__ void aes_decrypt_kernel(unsigned char * data, size_t len){
 }
 void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len){
     unsigned char * d_data;
-    size_t data_size = len*sizeof(unisgned char);
+    size_t data_size = len*sizeof(unsigned char);
     cudaMalloc(&d_data,data_size); // Allocate memory on the GPU for the data
     cudaMemcpy(d_data,data,data_size,cudaMemcpyHostToDevice); // Copy the data
     cudamemcpyToSymbol(d_const_expanded_keys,expanded_keys,176); // Copy the expanded keys to constant memory on the GPU
@@ -110,4 +110,8 @@ void aes_decrypt(unsigned char * data,unsigned char * expanded_keys, size_t len)
     int total_blocks =(len+15)/16;
     dim3 block_size(threads_per_block,1,1);
     dim3 grid_dim((total_blocks+threads_per_block-1)/threads_per_block,1,1);
+    aes_decrypt_kernel<<<grid_dim,block_size>>>(d_data,len); // Launch the AES decryption kernel on the GPU
+    cudaDeviceSynchronize(); // Wait for the GPU to finish processing
+    cudaMemcpy(data,d_data,data_size,cudaMemcpyDeviceToHost); // Copy the decrypted data back to the host
+    cudaFree(d_data);
 }
