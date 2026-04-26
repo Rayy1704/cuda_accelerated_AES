@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
 
     gettimeofday(&start_time, NULL);
     if (choice == 1) {
-        aes_encrypt(buf, expanded_keys_ptr, data_len);
+        aes_encrypt(buf, expanded_keys_ptr, data_len); // Encrypts the input data using the expanded keys
     } else if (choice == 2) {
-         aes_decrypt(buf, expanded_keys_ptr, data_len);
+         aes_decrypt(buf, expanded_keys_ptr, data_len); // Decrypts the input data using the expanded keys
      }
     gettimeofday(&end_time, NULL);
 
