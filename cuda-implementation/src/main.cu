@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     if (choice == 1) {
         aes_encrypt(buf, expanded_keys_ptr, data_len);
     } else if (choice == 2) {
-         //aes_decrypt(buf, expanded_keys_ptr, data_len);
+         aes_decrypt(buf, expanded_keys_ptr, data_len);
      }
     gettimeofday(&end_time, NULL);
 
