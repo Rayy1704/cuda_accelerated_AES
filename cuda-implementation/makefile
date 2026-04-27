@@ -6,7 +6,7 @@ INPUT_DIR = input
 OUTPUT_DIR = output
 TARGET = aes
 
-SRCS = $(SRC_DIR)/main.cu $(SRC_DIR)/aes_encryption.cu  $(SRC_DIR)/aes_core.cu $(SRC_DIR)/io.c
+SRCS = $(SRC_DIR)/main.cu $(SRC_DIR)/aes_encryption.cu $(SRC_DIR)/aes_decryption.cu $(SRC_DIR)/aes_core.cu $(SRC_DIR)/io.c
 HDRS = $(INC_DIR)/cuda_aes.h $(INC_DIR)/io.h
 
 .PHONY: all run clean
